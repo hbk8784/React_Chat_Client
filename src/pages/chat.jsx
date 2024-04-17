@@ -85,7 +85,7 @@ const Chat = ({ chatId, user }) => {
   }, [chatId]);
 
   useEffect(() => {
-    if (bottomRef) {
+    if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messagess]);
