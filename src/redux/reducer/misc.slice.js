@@ -20,10 +20,10 @@ const miscSlice = createSlice({
   initialState,
   reducers: {
     setIsNewGroup: (state, { payload }) => {
-      console.log(payload);
+      state.isNewGroup = payload;
     },
     setIsAddMember: (state, { payload }) => {
-      console.log(payload);
+      state.isAddMember = payload;
     },
     setIsNotification: (state, { payload }) => {
       state.isNotification = payload;
@@ -38,13 +38,13 @@ const miscSlice = createSlice({
       state.isFileMenu = payload;
     },
     setIsDeleteMenu: (state, { payload }) => {
-      console.log(payload);
+      state.isDeleteMenu = payload;
     },
     setUploadingLoader: (state, { payload }) => {
       state.uploadingLoader = payload;
     },
     setSelectedDeleteChat: (state, { payload }) => {
-      console.log(payload);
+      console.log("selected delete chat state from misc.slice");
     },
   },
   extraReducers: (builder) => {},

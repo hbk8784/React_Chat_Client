@@ -109,10 +109,20 @@ const Chat = ({ chatId, user }) => {
   );
 
   const alertListner = useCallback(
-    (data) => {
+    (content) => {
       if (data.chatId !== chatId) return;
 
-      setUserTyping(false);
+      const messageForAlert = {
+        content,
+        sender: {
+          _id: Math.random() * 100000,
+          name: "Admin",
+        },
+        chatId,
+        createdAt: new Date().toISOString(),
+      };
+
+      setMessagess((pre) => [...pre, messageForAlert]);
     },
     [chatId]
   );

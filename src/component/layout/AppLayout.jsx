@@ -4,14 +4,18 @@ import Title from "../shared/title";
 import { Drawer, Grid, Skeleton } from "@mui/material";
 import ChatList from "../specific/chatList";
 import { samepleChats } from "../../constants/sampleData";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Profile from "../specific/profile";
 import { useMyChatsQuery } from "../../redux/api/api";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsMobileMenu } from "../../redux/reducer/misc.slice";
 import { useErrors, useSocketEvents } from "../../hooks/hook";
 import { getSocket } from "../../socket";
-import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../../constants/events";
+import {
+  NEW_MESSAGE_ALERT,
+  NEW_REQUEST,
+  REFETCH_CHATS,
+} from "../../constants/events";
 import {
   incrementNotification,
   setNewMessagesAlert,
@@ -23,6 +27,7 @@ const AppLayout = () => (WrappedComponent) => {
     const params = useParams();
     const chatId = params.chatId;
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const socket = getSocket();
 
@@ -58,7 +63,7 @@ const AppLayout = () => (WrappedComponent) => {
       console.log("Delete chat", _id, groupChat);
     };
 
-    const newMessageAlertHandler = useCallback(
+    const newMessageAlertListner = useCallback(
       (data) => {
         console.log(data.chatId === chatId);
         if (data.chatId === chatId) return;
@@ -67,13 +72,19 @@ const AppLayout = () => (WrappedComponent) => {
       [chatId]
     );
 
-    const newRequestHandler = useCallback(() => {
+    const newRequestListner = useCallback(() => {
       dispatch(incrementNotification());
     }, [dispatch]);
 
+    const refetchListner = useCallback(() => {
+      refetch();
+      navigate("/");
+    }, [navigate]);
+
     const eventHandler = {
-      [NEW_MESSAGE_ALERT]: newMessageAlertHandler,
-      [NEW_REQUEST]: newRequestHandler,
+      [NEW_MESSAGE_ALERT]: newMessageAlertListner,
+      [NEW_REQUEST]: newRequestListner,
+      [REFETCH_CHATS]: refetchListner,
     };
 
     useSocketEvents(socket, eventHandler);

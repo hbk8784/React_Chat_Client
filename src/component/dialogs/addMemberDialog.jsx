@@ -1,37 +1,64 @@
-import { Button, Dialog, DialogTitle, Stack, Typography } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  Skeleton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { sampleUsers } from "../../constants/sampleData";
 import React, { useState } from "react";
 import UserItem from "../shared/userItem";
+import { useAsyncMutation, useErrors } from "../../hooks/hook";
+import {
+  useAddGroupMemberMutation,
+  useAvailableFriendsQuery,
+} from "../../redux/api/api";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsAddMember } from "../../redux/reducer/misc.slice";
 
-const AddMemberDialog = ({ addMember, isLoadingAddMember, chatId }) => {
-  const [members, setMembers] = useState(sampleUsers);
+const AddMemberDialog = ({ chatId }) => {
   const [selectedMemebers, setSelectedMembers] = useState([]);
+
+  const dispatch = useDispatch();
+
+  const { isAddMember } = useSelector((state) => state.misc);
+
+  const { isLoading, data, isError, error } = useAvailableFriendsQuery(chatId);
+
+  console.log(data);
+
+  const errors = [{ isError, error }];
+
+  useErrors(errors);
 
   const selectMemberHandler = (id) => {
     setSelectedMembers((pre) =>
       pre.includes(id) ? pre.filter((item) => item !== id) : [...pre, id]
     );
   };
+  const [addMembers, isLoadingAddMembers] = useAsyncMutation(
+    useAddGroupMemberMutation
+  );
 
   const addMemberSubmitHandler = () => {
+    addMembers("adding member...", { chatId, members: selectedMemebers });
     closeHandler();
-    console.log("add member submit handler");
   };
 
   const closeHandler = () => {
-    setSelectedMembers([]);
-    setMembers([]);
-    console.log("close handler");
+    dispatch(setIsAddMember(false));
   };
 
   return (
-    <Dialog open onClose={closeHandler}>
+    <Dialog open={isAddMember} onClose={closeHandler}>
       <Stack p={"2rem"} width={"20rem"}>
         <DialogTitle textAlign={"center"}>ADD Members</DialogTitle>
         <Stack>
-          {members.length > 0 ? (
-            members.map((i) => {
-              //   console.log(i);
+          {isLoading ? (
+            <Skeleton />
+          ) : data?.friends?.length > 0 ? (
+            data?.friends?.map((i) => {
               return (
                 <UserItem
                   key={i._id}
@@ -58,7 +85,7 @@ const AddMemberDialog = ({ addMember, isLoadingAddMember, chatId }) => {
           </Button>
           <Button
             variant="contained"
-            disabled={isLoadingAddMember}
+            disabled={isLoadingAddMembers}
             onClick={addMemberSubmitHandler}
           >
             confirm

@@ -27,6 +27,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import {
   setIsMobileMenu,
+  setIsNewGroup,
   setIsNotification,
   setIsSearch,
 } from "../../redux/reducer/misc.slice.js";
@@ -39,9 +40,11 @@ const NewGroupDialog = lazy(() => import("../specific/newGroup"));
 const Header = () => {
   const navigate = useNavigate();
 
-  const [isNewGroup, setIsNewGroup] = useState(false);
+  // const [isNewGroup, setIsNewGroup] = useState(false);
   // const [isNotification, setIsNotification] = useState(false);
-  const { isSearch, isNotification } = useSelector((state) => state.misc);
+  const { isSearch, isNotification, isNewGroup } = useSelector(
+    (state) => state.misc
+  );
   const { notificationCount } = useSelector((state) => state.chat);
 
   const dispatch = useDispatch();
@@ -56,7 +59,7 @@ const Header = () => {
   };
 
   const opneNewGroup = () => {
-    setIsNewGroup((pre) => !pre);
+    dispatch(setIsNewGroup(true));
   };
 
   const openNotification = () => {
