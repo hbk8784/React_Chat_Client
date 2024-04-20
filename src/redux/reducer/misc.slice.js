@@ -44,7 +44,10 @@ const miscSlice = createSlice({
       state.uploadingLoader = payload;
     },
     setSelectedDeleteChat: (state, { payload }) => {
-      console.log("selected delete chat state from misc.slice");
+      state.selectedDeleteChat = {
+        chatId: payload.chatId,
+        groupChat: payload.groupChat,
+      };
     },
   },
   extraReducers: (builder) => {},

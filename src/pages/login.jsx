@@ -19,10 +19,13 @@ import { server } from "../constants/config";
 import { useDispatch } from "react-redux";
 import { useExists } from "../redux/reducer/auth.slice";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const name = useInputValidation("");
   const bio = useInputValidation("");
@@ -34,6 +37,9 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    const toastId = toast.loading("Logging In...");
+
+    setIsLoading(true);
     const config = {
       withCredentials: true,
       headers: {
@@ -51,17 +57,24 @@ const Login = () => {
         config
       );
       dispatch(useExists(data.user));
-      toast.success(data.message, { duration: 5000 });
+      toast.success(data.message, { duration: 5000, id: toastId });
     } catch (error) {
       toast.error(error?.response?.data?.message || "error failed to login", {
         duration: 5000,
+        id: toastId,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   //---------------signup handler----------------------------
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    const toastId = toast.loading("Working on it! please Wait...");
+
+    setIsLoading(true);
 
     const config = {
       withCredentials: true,
@@ -86,9 +99,14 @@ const Login = () => {
       );
 
       console.log(data);
-      toast.success(data.message);
+      toast.success(data.message, { id: toastId });
+      setIsLogin(true);
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Could not Register");
+      toast.error(error?.response?.data?.message || "Could not Register", {
+        id: toastId,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -188,6 +206,7 @@ const Login = () => {
                 onClick={handleLogin}
                 sx={{ marginTop: "1rem" }}
                 fullWidth
+                disabled={isLoading}
               >
                 Login
               </Button>
@@ -200,6 +219,7 @@ const Login = () => {
                 type="button"
                 fullWidth
                 onClick={() => setIsLogin(false)}
+                disabled={isLoading}
               >
                 Register
               </Button>
@@ -375,6 +395,7 @@ const Login = () => {
                 onClick={handleRegister}
                 sx={{ marginTop: "1rem" }}
                 fullWidth
+                disabled={isLoading}
               >
                 Register
               </Button>
@@ -387,6 +408,7 @@ const Login = () => {
                 type="button"
                 fullWidth
                 onClick={() => setIsLogin(true)}
+                disabled={isLoading}
               >
                 Login
               </Button>
